@@ -1,0 +1,202 @@
+#:import sla kivy.adapters.simplelistadapter
+#:import label kivy.uix.label
+
+<TipBubble>
+    size_hint: (None, None)
+    size: (80, 60)
+    pos_hint: {'center_x': .5, 'y': .6}
+    background_color: (1, 0, 0, .5)
+    Label:
+        font_size: 12
+        text: root.text
+        size: root.size
+
+
+<ImageButton@Button+HoverBehavior>:
+    source: None
+    Image:
+        source: root.source
+        pos: root.pos
+        size: root.size
+        
+<ScrollableLabel>:
+    effect_cls: 'ScrollEffect'
+    Label:
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width, None
+        text: root.text  
+        color: root.color
+        markup: True
+
+<Player>:
+    file: self.file
+    sound: None
+    length: 0    
+        
+<ToolBar>: 
+    player: myplayer
+    
+    Player:
+        id: myplayer
+        file: None
+    BoxLayout:
+        width: root.width
+        top: root.top
+        ImageButton:
+            source: 'img/music.png'
+            hovertext: 'Load music'
+            on_press: root.loadmusic()   
+        ImageButton:
+            source: 'img/play.png'
+            hovertext: 'Play'
+            on_press: root.play()
+        ImageButton:
+            source: 'img/pause.png'
+            hovertext: 'Pause'
+            on_press: root.pause()
+        ImageButton:
+            source: 'img/stop.png'
+            hovertext: 'Stop'
+            on_press: root.stop()
+            
+        ImageButton:
+            source: 'img/importdoc.png'
+            hovertext: 'Load lyrics'
+            on_press: root.loadlyrics()
+        ImageButton:
+            source: 'img/save.png'
+            hovertext: 'Save lyrics \n (F6)'
+            on_press: root.savelyrics()            
+        ImageButton:
+            source: 'img/saveas.png'
+            hovertext: 'Save lyrics as \n (F12)'
+            on_press: root.savelyricsas()
+
+        ImageButton:
+            source: 'img/inserttime.png'
+            hovertext: 'Insert time \n stamp (F5)'
+            on_press: root.inserttime()
+            
+        
+        ImageButton:
+            source: 'img/notepad.png'
+            hovertext: 'Save playlist.'
+            on_press: root.savelist()
+
+        ImageButton: 
+            source: 'img/delete.png'
+            hovertext: 'Delete from \n playlist'
+            on_press: root.deletelist()
+            
+        ImageButton: 
+            source: 'img/help.png'
+            hovertext: 'Help'
+            on_press: root.help()
+  
+        
+<MainUI>:
+    toolbar: mytoolbar
+    sliderbar: myslider
+    
+    timelabel: mytime
+    songlabel: mysong
+    lyriclabel: mylyricfile
+    
+    previewlabel: mypreview
+    
+    lyricstext: mylyrics
+    
+    musiclist: mylist
+    #musiclistadapter: myadapter
+    
+    defaulttab: musictab
+    
+    statusbar: actionprev
+    volumebutton: myvolume
+        
+    GridLayout:
+        #orientation: 'vertical'
+        size: root.size 
+        rows: 4
+        rows_minimum: {0:root.height*0.17, 1:root.height*0.1, 2:root.height*0.65, 3:root.height*0.08}
+        #spacing: [0,20]
+        ToolBar:
+            id: mytoolbar  
+            width: root.width
+            #on_touch_down: root.do_something()
+        Slider:   
+            id: myslider
+            width: root.width
+        GridLayout:
+            width: root.width
+            cols: 2
+            cols_minimum: {0:root.width*0.3, 1:root.width*0.7}
+            BoxLayout: 
+                orientation: 'vertical'
+                Label:
+                    id: mytime
+                    font_size: 15 
+                    center_x: root.width / 4
+                    size_hint: 1, .1
+                    top: root.top - 50
+                    text: "00:00.00/00:00.00"
+                    color: [0,1,1,1]   
+                Label:
+                    id: mysong
+                    font_size: 15 
+                    center_x: root.width / 4
+                    size_hint: 1, .1
+                    top: root.top - 50
+                    text: "Music not selected yet."
+                    color: [0,1,1,1] 
+                Label:
+                    id: mylyricfile
+                    font_size: 15 
+                    center_x: root.width / 4
+                    size_hint: 1, .1
+                    top: root.top - 50
+                    text: "Lyrics not selected yet."
+                    color: [0,1,1,1] 
+                ScrollableLabel:
+                    id: mypreview
+                    font_size: 17 
+                    center_x: root.width / 4
+                    text: "No preview available. Save/Load a .lrc file first."
+                    color: [0,1,0,1]
+            TabbedPanel:
+                do_default_tab: False
+                #default_tab: musictab
+                TabbedPanelItem:
+                    id: musictab
+                    text: 'Music'
+                    ListView:
+                        id: mylist
+                TabbedPanelItem:
+                    id: lyricstab
+                    text: 'Lyrics'
+                    ScrollView:
+                        id: scrlv
+                        effect_cls: 'ScrollEffect'
+                        bar_width: 10
+                        bar_color: [0, 1, 0, 1]
+                        bar_inactive_color: [0, 1, 0, 1]
+                        scroll_type: ['bars']
+                        LyricsInput:
+                            id: mylyrics
+                            text: ""
+                            size_hint: 1, None
+                            height: max(self.minimum_height, scrlv.height)
+                
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    id: actionprev
+                    disabled: True
+                    with_previous: False
+                ActionSeparator:
+                ActionButton:
+                    id: myvolume
+                    icon: 'img/volume.png'
+                    on_press: root.togglevolume(self)
+            
